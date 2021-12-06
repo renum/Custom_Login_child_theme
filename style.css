@@ -1,0 +1,161 @@
+
+/*
+Theme Name: Twenty Twenty-One Child
+Theme URI: http://musicclassforall.local/themes/twentytwentyone-child/
+Author: Renu Mehta
+Author URI: https://wordpress.org/
+Template:     twentytwentyone
+Description: Twenty Twenty-One  Child theme
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: twentytwentyonechild
+Tags: one-column, accessibility-ready, custom-colors, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, block-patterns, rtl-language-support, sticky-post, threaded-comments, translation-ready
+Text Domain:  twentytwentyonechild
+
+*/
+
+
+
+#page{
+    background-color: black;
+    color:red;
+    
+}
+
+/*#content{
+
+    margin:0 10%; 
+}*/
+
+.site-branding{
+    background-color: red;
+    color:black;
+}
+
+
+
+#primary-menu-list a{
+    background-color: red;
+    color:white;
+    font-weight: bold;
+    padding: 0.8rem 1rem;
+    margin-right:2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    
+
+}
+
+#primary-menu-list a:hover{
+    background-color: white;
+    color:red;
+    border:2px solid red;
+    text-decoration: none;
+    
+
+}
+
+
+/*Custom login form*/
+#loginform-custom{
+
+    margin:0 20%;
+    border: 1px solid red;
+    padding:2rem;
+ }
+ 
+ .login-password{
+     margin-top:5%;
+ }
+
+ #user-login,#user-pass{
+
+    float:left;
+    width:20%;
+ }
+
+ #loginform-custom label{
+
+    float:left;
+    width:30%;
+ }
+
+
+ #wp-submit, #register{
+    background-color: red;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    margin:2rem 2rem;
+    border-radius: 0.5rem;
+    
+ }
+
+ #wp-submit:hover, #register:hover{
+    background-color: white;
+    color:red;
+
+
+ }
+
+
+.login-submit{
+    margin-left:5rem;
+    
+
+}
+.login-remember{
+
+    margin-top:2rem;
+    padding-top:0.5rem;
+}
+
+#primary{
+
+    background:cover;
+}
+
+p.login-msg{
+
+    margin:0 20%;
+    
+}
+
+
+
+/*Register form*/
+
+#wp-signup-form{
+
+    display: flex;
+    flex-direction: column;
+    margin:0 10%;
+}
+
+
+#wp-signup-form #username,#wp-signup-form #email , #wp-signup-form #password 
+{
+    float:left;
+    width:50%;
+}
+#submitbtn{
+
+    width:20%;
+    margin:2rem 2rem;
+    padding:0.5rem 1rem;
+    background-color: red;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    
+
+}
+
+#submitbtn:hover{
+    background-color: white;
+    color:red;
+
+
+ }
+
+
+
