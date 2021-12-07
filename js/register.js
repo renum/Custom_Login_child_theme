@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded",
                                 console.log('dom loaded');
                                 
                                 ErrorList=document.querySelector('.form-errors');
+                                SuccessMsg=document.querySelector('.form-success');
                                 Name= document.querySelector("input[name='username']");
                                 Email= document.querySelector("input[name='email']");
                                                                 
@@ -76,13 +77,15 @@ function Validate_input(e){
 
         e.preventDefault();
     }
-
-
+   
 
 }
 
 
 function clearErrors(){
     ErrorList.innerHTML='';
+    SuccessMsg.innerHTML='';
 
 }
+
+

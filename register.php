@@ -72,8 +72,11 @@
 
                 $password=$_POST['password'];
                 $new_user_id=wp_create_user($username,$password,$email);
+                //wp_insert_user is a more complete way of creating user as it accepts more parameters.
                 if(!is_wp_error($new_user_id)){
                     $success=1;
+
+                    $success_message='You have been registered successfully.'."\n".'Please check your email and click login link to login to your account.';
                     
                     //wp_redirect(get_bloginfo('url').'/login/?success=1&u=' . $username);
                     //header( 'Location:' . get_bloginfo('url') . '/login/?success=1&u=' . $username );
@@ -109,7 +112,7 @@
 ?>
 
  <form id="wp-signup-form" action="<?php echo esc_url($_SERVER['REQUEST_URI'])?>" method="post">
-    
+    <p class="form-success"> <?php echo $success_message;?></p>
     <ul class="form-errors">
         <?php 
             foreach($errors as $err){
@@ -119,9 +122,9 @@
         ?>
     </ul>
     <label for ="username">Username</label>
-    <input type="text" name="username" id="username" value="<?php echo $username;?>" />
+    <input type="text" name="username" id="username" value="<?php if(isset($username) && $success='') {echo $username;}?>" />
     <label for="email">Email</label>
-    <input type="email" name="email" id="email" value="<?php echo $email;?>" />
+    <input type="email" name="email" id="email" value="<?php if(isset($email) && $success='') {echo $email;}?>" />
     <label for="password"> Password</label>
     <input type="password" name="password" id="password" />
     <label for="password_confirmation"> Password</label>
