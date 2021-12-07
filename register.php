@@ -72,7 +72,7 @@
 
                 $password=$_POST['password'];
                 $new_user_id=wp_create_user($username,$password,$email);
-                if($new_user_id){
+                if(!is_wp_error($new_user_id)){
                     $success=1;
                     
                     //wp_redirect(get_bloginfo('url').'/login/?success=1&u=' . $username);
@@ -80,7 +80,7 @@
                     
                     //wp_redirect(home_url('/login/?success=1&u='.$username));  /***If want to redirect to login page and let user enter password */
                     
-                    //Login directly after registration and redirect to home page
+                    /*Login directly after registration and redirect to home page
                     $creds=array();
                     $creds['user_login']=$username;
                     $creds['user_password']=$password;
@@ -92,7 +92,7 @@
                     else{
                         wp_redirect(home_url());
 
-                    }                                                                                      
+                    }   */                                                                                   
 
                 }
                

@@ -198,7 +198,7 @@
     add_action('init', 'buffer_start');
     add_action('wp_footer', 'buffer_end');
 
-//Disable adin bar
+//Disable admin bar. But dashboard still visible to user if go to wp-admin
     add_action('after_setup_theme', 'remove_admin_bar');
 
     function remove_admin_bar() {
@@ -206,6 +206,137 @@
             show_admin_bar(false);
         }
     }
+
+    //* Custom register email after user is created*/
+
+    function send_welcome_email_to_new_user($user_id) {
+        $user = get_userdata($user_id);
+        $user_email = $user->user_email;
+        // for simplicity, lets assume that user has typed their first and last name when they sign up
+        $user_full_name = $user->user_firstname . $user->user_lastname;
+        $atts=array();
+
+        // Now we are ready to build our welcome email
+        $atts['to'] = $user_email;
+        $atts['subject']= "hi ". $user->user_login. "Your username and password";
+        $atts['message'] = '
+                <h1>Dear ' . $user->user_login . ',</h1></br>
+                <p>Thank you for joining our site. Your account is now active.</p>
+                <p>Please go ahead and navigate around your account.</p>
+                <p>Let me know if you have further questions, I am here to help.</p>
+                <p>Enjoy the rest of your day!</p>
+                <p>Kind Regards,</p>
+                <p>Musicclassesforall</p>
+        ';
+        $atts['message']=$atts['message']."\n".'<a href="'.wp_login_url().'">Login Here</a>';
+        $atts['headers'] = array('Content-Type: text/html; charset=UTF-8');
+
+        // Create array that can be picked up later for the email.
+        global $my_array;
+        $my_array['ID'] = $user_id;
+
+        // Get the username, add it to the array.
+        if ( isset(  $_POST['user_login'] ) ) {
+            $my_array['user_login'] =  $_POST['user_login'];
+        } else {
+            $user_info = get_userdata( $user_id );
+            $my_array['user_login'] = $user_info->user_login;
+        }
+
+        // Create an activation key, add to array.
+        $my_array['activation_key'] = md5( microtime() . rand() );
+        update_user_meta( $user_id, 'auto_log_key', $my_array['activation_key'] );
+
+
+
+        if (wp_mail($atts['to'],$atts['subject'],$atts['message'],$atts['headers'])) {
+        error_log("email has been successfully sent to user whose email is " . $user_email);
+        }else{
+        error_log("email failed to sent to user whose email is " . $user_email);
+        }
+    }
+
+    // Attach above function to user_register action hook
+    add_action('user_register', 'send_welcome_email_to_new_user');
+  
+
+    /*Add login info to Login link*/
+
+    add_filter( 'wp_mail', 'set_up_auto_login_link' );
+    function set_up_auto_login_link( $atts ) {
+
+        //var_dump($atts);
+    
+        // Check if email subject contains "Your username and password".
+        if ( isset ( $atts ['subject'] ) && strpos( 'Your username and password',$atts['subject'])!==0 ) {
+            if ( isset( $atts['message'] ) ) {
+    
+                // Pick up the global array of user info from 'user_register' action.
+                global $my_array;
+    
+                // Assemble the data for the query string.
+                $qstr = '?id=' . $my_array['ID'] . '&u=' . $my_array['user_login'] . '&k=' . $my_array['activation_key'];
+    
+                // Prepare data for search/replace on the login link (to add the query string).
+                $old = '/wp-login.php';
+                $new = '/wp-login.php' . $qstr;
+    
+                // Replace the original login link with the new one containing query string data for auto login.
+                $atts['message'] = str_replace( $old, $new, $atts['message'] );
+            }
+        }
+    
+        return $atts;
+    }
+
+
+    
+
+    /*Enable auto login by parsing the strings sent in email link*/
+
+    add_action( 'init', 'auto_log_user_in' );
+    function auto_log_user_in() {
+
+        // If ID, user, and key are all present.
+        if ( isset( $_GET['id'] ) 
+        && isset( $_GET['u'] ) 
+        && isset( $_GET['k'] ) ) {
+
+            // Get the query string values.
+            $user_id    = $_GET['id'];
+            $user_login = $_GET['u'];
+            $activation = $_GET['k'];
+
+            // Get the user data for validation.
+            $chk_user = get_user_by( 'id', $user_id );
+
+            // If a user is returned and it's not an admin, validate and login.
+            if ( $chk_user && ! user_can( $chk_user->ID, 'manage_options' ) ) {
+
+                if ( $chk_user->user_login == $user_login && $chk_user->auto_log_key == $activation ) {
+
+                    wp_set_current_user( $chk_user->ID, $user_login );
+                    wp_set_auth_cookie( $chk_user->ID );
+                    do_action( 'wp_login', $user_login );
+                    wp_redirect( home_url() );
+                    exit();
+
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
