@@ -35,7 +35,7 @@ Text Domain:  twentytwentyonechild
 
 
 
-#primary-menu-list a{
+#primary-menu-list a, .main-nav-welcm{
     background-color: red;
     color:white;
     font-weight: bold;
@@ -47,7 +47,7 @@ Text Domain:  twentytwentyonechild
 
 }
 
-#primary-menu-list a:hover{
+#primary-menu-list a:hover, .main-nav-welcm:hover{
     background-color: white;
     color:red;
     border:2px solid red;
@@ -158,16 +158,32 @@ p.login-msg{
  }
 
 
- .primary-navigation div  .menu-wrapper .main-navigation .sub-content{
+ .primary-navigation div  .menu-wrapper .main-nav-welcm .sub-content{
 
     display:none;
  }
 
- .primary-navigation div  .menu-wrapper .main-navigation:hover .sub-content{
+ .primary-navigation div  .menu-wrapper .main-nav-welcm:hover .sub-content{
 
     display:block;
+    position:absolute;
+    float:left;
+    max-height:100rem;
+    width:14.3rem;
+    z-index:1;
+    top:50px;
+    left:-1px;
  }
 
+ .main-nav-welcm{
+
+    width:15rem;
+    position: relative;
+ }
+
+
+
+ 
 
  
 

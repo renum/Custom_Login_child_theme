@@ -9,9 +9,9 @@
         if($args->theme_location == 'primary'){
             if(is_user_logged_in()){
 
-                $items.='<a href="'.wp_logout_url().'">Logout</a>'; 
-                $items.='<div class="main-navigation">'.'Welcome '.get_userdata(get_current_user_id())->user_login.'!'.'<div class="sub-content"><a href="">My Profile</a>'.
-                '<a href="">My Classes</a></div></div>';
+                
+                $items.='<li class="main-nav-welcm">Welcome '. get_userdata(get_current_user_id())->user_login.'!'.'<div class="sub-content"><a href="">My Profile</a>'.
+                '<a href="">My Classes</a><a href="'.wp_logout_url().'">Logout</a></div></li>';
             }
             
             else{
