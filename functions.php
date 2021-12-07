@@ -10,6 +10,8 @@
             if(is_user_logged_in()){
 
                 $items.='<a href="'.wp_logout_url().'">Logout</a>'; 
+                $items.='<div class="main-navigation">'.'Welcome '.get_userdata(get_current_user_id())->user_login.'!'.'<div class="sub-content"><a href="">My Profile</a>'.
+                '<a href="">My Classes</a></div></div>';
             }
             
             else{
@@ -218,7 +220,7 @@
 
         // Now we are ready to build our welcome email
         $atts['to'] = $user_email;
-        $atts['subject']= "hi ". $user->user_login. "Your username and password";
+        $atts['subject']= "hi   ". $user->user_login. "Your username and password";
         $atts['message'] = '
                 <h1>Dear ' . $user->user_login . ',</h1></br>
                 <p>Thank you for joining our site. Your account is now active.</p>
@@ -325,16 +327,6 @@
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
