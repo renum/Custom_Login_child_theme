@@ -1,119 +1,135 @@
 <?php
 
-//Add Login/out button on menu
+/**** Add menu items -start */
+
+        //Add Login/out button on menu
 
 
+            function wti_loginout_link_menu($items,$args){
 
-    function wti_loginout_link_menu($items,$args){
+                if($args->theme_location == 'primary'){
+                    if(is_user_logged_in()){
 
-        if($args->theme_location == 'primary'){
-            if(is_user_logged_in()){
+                        
+                        $items.='<li class="main-nav-welcm">Welcome '. get_userdata(get_current_user_id())->user_login.'!'.'<div class="sub-content"><a href="">My Profile</a>'.
+                        '<a href="">My Classes</a><a href="'.wp_logout_url().'">Logout</a></div></li>';
+                    }
+                    
+                    else{
+                        //$items.='<a href="'.wp_login_url(get_permalink()).'">Custom Login</a>';   //goes to default wp-login page
+                        //echo 'login link is'.get_page_link(get_page_by_title('loginc'));
+                        $items.='<a href="'.esc_url(get_page_link(get_page_by_title('login'))).'">Login</a>';   //goes to custom login page
+                    }
+                    
+                    
+                }
+
+                return $items;
+
+            }
+
+            add_filter('wp_nav_menu_items','wti_loginout_link_menu',10,2);
+
+        //Add Register button on custom login form. Utilise form bottom, top or middle
+
+
+            function add_register_button(){
 
                 
-                $items.='<li class="main-nav-welcm">Welcome '. get_userdata(get_current_user_id())->user_login.'!'.'<div class="sub-content"><a href="">My Profile</a>'.
-                '<a href="">My Classes</a><a href="'.wp_logout_url().'">Logout</a></div></li>';
+                //echo $register_page;
+                //$register_button='<p>New User. Register here.<button id="register" onclick=location.href=\'http://musicclass.local/registercustom/\';>Register</button></p>';
+                $register_button='<p>New User. Register here.<button id="register">Register</button></p>';
+                return $register_button;
+
             }
-            
-            else{
-                //$items.='<a href="'.wp_login_url(get_permalink()).'">Custom Login</a>';   //goes to default wp-login page
-                //echo 'login link is'.get_page_link(get_page_by_title('loginc'));
-                $items.='<a href="'.esc_url(get_page_link(get_page_by_title('login'))).'">Login</a>';   //goes to custom login page
+
+            add_action('login_form_bottom', 'add_register_button');
+
+
+/**** Add menu items -end */    
+
+
+/***Redirects- start */
+        //Redirect to custom login page instead of wp-login when logged out
+
+
+            function logout_page(){
+
+                $login_page=home_url('/login');
+                wp_redirect($login_page . '?login=false');
+                exit;
+
+
             }
+            add_action('wp_logout','logout_page');
+
+        //Redirect to custom login page when wp-login.php is accessed. wp-admin still accessible
+
+            function redirect_login_page(){
+                $login_page=home_url('/login');
+                $page_viewed=basename(esc_url($_SERVER['REQUEST_URI']));
+                //echo $_SERVER['REQUEST_URI'];
+                //if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) && strpos('action=rp',$_SERVER['REQUEST_URI']) == 0)
+                if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) )
+                
+                
+                {
+                    wp_redirect($login_page);
+                    exit;
+
+                }
+                if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && is_user_logged_in() ){
+                    wp_redirect(home_url());
+                    exit;
+
+                }
+            }
+            add_action( 'init','redirect_login_page');
+
+
+
+        //Redirect to home page if user is logged in and trying to access register page
+            function redirect_home_page(){
+                $home_page=home_url();
             
+                $page_viewed=basename(esc_url($_SERVER['REQUEST_URI']));
+
+                if(($page_viewed == "register.php"|| $page_viewed=="register") && is_user_logged_in()){
+                    wp_redirect($home_page);
+                    exit;
+
+                }
+            }
+            add_action('init','redirect_home_page');
+
+        //Redirect to custom login page instead of wp-login when any errors
+            function verify_username_password( $user, $username, $password ) {
+                
+                $login_page  = home_url( '/login/' );
+                if( $username == "" || $password == "")  {
+                    
+                    wp_redirect( $login_page . '?login=empty');
+                    exit;
+                }
+                
+                
+            }
+            add_filter( 'authenticate', 'verify_username_password', 1,3);
+
+            function login_failed() {
+                $login_page  = home_url( '/login/' );
+                wp_redirect( $login_page . '?login=failed' );
+                
+               exit;
             
-        }
-
-        return $items;
-
-    }
-
-    add_filter('wp_nav_menu_items','wti_loginout_link_menu',10,2);
-
-//Add Register button on custom login form. Utilise form bottom, top or middle
-
-
-    function add_register_button(){
-
-        
-        //echo $register_page;
-        //$register_button='<p>New User. Register here.<button id="register" onclick=location.href=\'http://musicclass.local/registercustom/\';>Register</button></p>';
-        $register_button='<p>New User. Register here.<button id="register">Register</button></p>';
-        return $register_button;
-
-    }
-
-    add_action('login_form_bottom', 'add_register_button');
-
-//Redirect to custom login page instead of wp-login when logged out
-
-
-    function logout_page(){
-
-        $login_page=home_url('/login');
-        wp_redirect($login_page . '?login=false');
-        exit;
-
-
-    }
-    add_action('wp_logout','logout_page');
-
-//Redirect to custom login page when wp-login.php is accessed. wp-admin still accessible
-
-    function redirect_login_page(){
-        $login_page=home_url('/login');
-        $page_viewed=basename(esc_url($_SERVER['REQUEST_URI']));
-        if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) ){
-            wp_redirect($login_page);
-            exit;
-
-        }
-        if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && is_user_logged_in() ){
-            wp_redirect(home_url());
-            exit;
-
-        }
-    }
-    add_action( 'init','redirect_login_page');
+               
+            }
+            add_action( 'wp_login_failed', 'login_failed' );
 
 
 
-//Redirect to home page if user is logged in and trying to access register page
-    function redirect_home_page(){
-        $home_page=home_url();
-    
-        $page_viewed=basename(esc_url($_SERVER['REQUEST_URI']));
 
-        if(($page_viewed == "register.php"|| $page_viewed=="register") && is_user_logged_in()){
-            wp_redirect($home_page);
-            exit;
-
-        }
-    }
-    add_action('init','redirect_home_page');
-
-//Redirect to custom login page instead of wp-login when any errors
-    function verify_username_password( $user, $username, $password ) {
-        
-        $login_page  = home_url( '/login/' );
-        if( $username == "" || $password == "")  {
-            
-            wp_redirect( $login_page . '?login=empty');
-            exit;
-        }
-        
-        
-    }
-    add_filter( 'authenticate', 'verify_username_password', 1,3);
-
-    function login_failed() {
-        $login_page  = home_url( '/login/' );
-        wp_redirect( $login_page . '?login=failed' );
-        exit;
-    }
-    add_action( 'wp_login_failed', 'login_failed' );
-
-
-  
+/***Redirects- end */  
   
 
 
@@ -179,9 +195,7 @@
 
     add_action('init', 'custom_login_shortcode');
 
-
-
-
+    
 
 
 //Start buffering to avoid redirect issues after successful registration
@@ -200,6 +214,9 @@
     add_action('init', 'buffer_start');
     add_action('wp_footer', 'buffer_end');
 
+
+
+
 //Disable admin bar. But dashboard still visible to user if go to wp-admin
     add_action('after_setup_theme', 'remove_admin_bar');
 
@@ -208,6 +225,7 @@
             show_admin_bar(false);
         }
     }
+
 
     //* Custom register email after user is created*/
 
@@ -285,6 +303,7 @@
     
                 // Replace the original login link with the new one containing query string data for auto login.
                 $atts['message'] = str_replace( $old, $new, $atts['message'] );
+                //error_log($atts['message']);
             }
         }
     
@@ -328,10 +347,250 @@
         }
     }
 
+//Forgot password functionality
+
+/*Edit the default retrieve password email*/
+    //* Password reset activation E-mail -> Body
+add_filter( 'retrieve_password_message', 'dnlt_retrieve_password_message', 10, 2 );
+
+function dnlt_retrieve_password_message( $message, $key ){
+    remove_filter( 'wp_mail', 'set_up_auto_login_link' );   //This filter originally set for sending autologin link if set at this point changes the forgot password link sent in the email
+    //error_log('modifying retrieve mail message');
+    $user_data = '';
+    // If no value is posted, return false
+    if( ! isset( $_POST['user_login'] )  ){
+            return '';
+    }
+    // Fetch user information from user_login
+    if ( strpos( $_POST['user_login'], '@' ) ) {
+
+        $user_data = get_user_by( 'email', trim( $_POST['user_login'] ) );
+    } else {
+        $login = trim($_POST['user_login']);
+        $user_data = get_user_by('login', $login);
+    }
+    if( ! $user_data  ){
+        return '';
+    }
+    
+    $user_login = $user_data->user_login;
+    $user_email = $user_data->user_email;
+    // Setting up message for retrieve password
+    $message = "A password reset has been requested for this site:\n\n";
+    $message .= network_home_url( '/' ) . "\r\n\r\n";
+    $message .= sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";  
+    $message .= "Change this text to whatever you like.\n\n";
+    $message .= "If you did not request this, just ignore this email and nothing will happen.\n\n"; 
+    $message .= "To reset your password, visit the following address:\n";
+    $message .= site_url("wp-login.php?action=resetpass&key=$key&login=" . rawurlencode($user_login), 'login')."\r\n";
+    //$message .= site_url("wp-login.php?action=rp&key=$key&login=$user_login");
+   
+    return $message;
+}
+
+//*****Forgot password customization *//
+/***Redirect to the custom forgot password page when link from wp_lostpassword_url() is accessed */
+
+add_action('login_form_lostpassword','redirect_to_custom_lost_password');
+
+function redirect_to_custom_lost_password(){
+
+    if($_SERVER['REQUEST_METHOD']=='GET'){
+        if(is_user_logged_in()){
+            wp_redirect(home_url());
+            exit;
+        }
+        wp_Redirect(home_url('member-password-lost'));
+        exit;
+    }
+}
+
+/* Redirect to custom login page with message that email has been sent after sending mail*/
+add_action( 'login_form_lostpassword', 'do_password_lost' );
+
+function do_password_lost() {
+    if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+        $errors = retrieve_password();  //only checks data  from form and prepare by creating reset token
+        if ( is_wp_error( $errors ) ) {
+            // Errors found
+            $redirect_url = home_url( 'member-password-lost' );
+            $redirect_url = add_query_arg( 'errors', join( ',', $errors->get_error_codes() ), $redirect_url );
+        } else {
+            // Email sent
+            $redirect_url = home_url( 'login' );
+            $redirect_url = add_query_arg( 'checkemail', 'confirm', $redirect_url );
+        }
+ 
+        wp_redirect( $redirect_url );
+        exit;
+    }
+}
+
+
+/**Password reset */
+add_action( 'login_form_rp', 'redirect_to_custom_password_reset' );
+add_action( 'login_form_resetpass', 'redirect_to_custom_password_reset');
+
+function redirect_to_custom_password_reset(){
+    
+    var_dump($_SERVER);
+    var_dump($_GET);
+    var_dump($_REQUEST); 
+    var_dump($_COOKIE); 
+    echo COOKIEHASH;
+
+    
+    if($_SERVER['REQUEST_METHOD'] =='GET'){
+
+        list( $rp_path ) = explode( '?', wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$rp_cookie       = 'wp-resetpass-' . COOKIEHASH;
+
+		if ( isset( $_GET['key'] ) && isset( $_GET['login'] ) ) {
+			$value = sprintf( '%s:%s', wp_unslash( $_GET['login'] ), wp_unslash( $_GET['key'] ) );
+			setcookie( $rp_cookie, $value, 0, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+
+			wp_safe_redirect( remove_query_arg( array( 'key', 'login' ) ) );
+			exit;
+		}
+
+        
+        if ( isset( $_COOKIE[ $rp_cookie ] ) && 0 < strpos( $_COOKIE[ $rp_cookie ], ':' ) ) {
+			list( $rp_login, $rp_key ) = explode( ':', wp_unslash( $_COOKIE[ $rp_cookie ] ), 2 );
+
+			$user = check_password_reset_key( $rp_key, $rp_login );
+    
+            var_dump($user);
+        
+            if(is_wp_error($user) || ! $user){
+
+                echo $user->get_error_code();   
+
+                if($user && $user->get_error_code() == 'expired_key'){
+                    wp_redirect(home_url('login?login=expiredkey'));
+                //echo 'expired';
+                }
+                else{
+
+                     wp_redirect(home_url('login?login=invalidkey')); 
+                //echo 'invalid';
+                     
+                }
+                exit;
+            }                                                                                           
+        }
+
+    
+        $redirect_url=home_url('member-password-reset');
+        $redirect_url=add_query_arg( 'login',esc_attr($rp_login),$redirect_url );
+        $redirect_url=add_query_arg( 'key',esc_attr($rp_key),$redirect_url );
+        echo $redirect_url;
+        wp_redirect($redirect_url);
+       
+        
+    }
+}
+
+add_action( 'login_form_rp', 'do_password_reset' );
+add_action( 'login_form_resetpass', 'do_password_reset');
+
+/**
+ * Resets the user's password if the password reset form was submitted.
+ */
+function do_password_reset() {
+    if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+        $rp_key = $_REQUEST['rp_key'];
+        $rp_login = $_REQUEST['rp_login'];
+ 
+        $user = check_password_reset_key( $rp_key, $rp_login );
+ 
+        if ( ! $user || is_wp_error( $user ) ) {
+            if ( $user && $user->get_error_code() === 'expired_key' ) {
+                wp_redirect( home_url( 'login?login=expiredkey' ) );
+            } else {
+                wp_redirect( home_url( 'login?login=invalidkey' ) );
+            }
+            exit;
+        }
+ 
+        if ( isset( $_POST['pass1'] ) ) {
+            if ( $_POST['pass1'] != $_POST['pass2'] ) {
+                // Passwords don't match
+                $redirect_url = home_url( 'member-password-reset' );
+ 
+                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
+                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
+                $redirect_url = add_query_arg( 'error', 'password_reset_mismatch', $redirect_url );
+ 
+                wp_redirect( $redirect_url );
+                exit;
+            }
+ 
+            if ( empty( $_POST['pass1'] ) ) {
+                // Password is empty
+                $redirect_url = home_url( 'member-password-reset' );
+ 
+                $redirect_url = add_query_arg( 'key', $rp_key, $redirect_url );
+                $redirect_url = add_query_arg( 'login', $rp_login, $redirect_url );
+                $redirect_url = add_query_arg( 'error', 'password_reset_empty', $redirect_url );
+ 
+                wp_redirect( $redirect_url );
+                exit;
+            }
+ 
+            // Parameter checks OK, reset password
+            reset_password( $user, $_POST['pass1'] );
+            wp_redirect( home_url( 'login?password=changed' ) );
+        } 
+        else {
+            echo "Invalid request.";
+        }
+ 
+        exit;
+    }
+}
+
+/****************Shortcodes */
+
+//Add short code to display error on login page
+
+//function show_credential_err_shortcode(){
+    add_shortcode('show-credential-error', 'show_credential_error_fn');
+//}
+function show_credential_error_fn(){
+    //echo 'login error';
+    //if(is_page('login')){
+        $login=(isset($_GET['login'])?$_GET['login']:0);
+        $password=(isset($_GET['password'])? $_GET['password']:0);
+        $checkemail=(isset($_GET['checkemail'])? $_GET['checkemail']:0);
+
+        if($login === "empty"){
+            echo '<p class="login-msg"><strong>Error:</strong>Username and/or password is empty</p>';
+        }
+        if($login === "failed"){
+            echo '<p class="login-msg"><strong>Error:</strong> Invalid username and/or password</p>';
+           
+    
+        }
+        if($login==="invalidkey"){
+            echo '<p class="login-msg"><strong>Error:</strong>The password reset key is invalid</p>';
+        }
+        if($password==="changed"){
+            echo '<p class="login-msg">Password has been changed successfully. Please proceed to login.</p>';
+        }
+    
+        elseif($checkemail==="confirm"){
+            echo '<p class="login-msg">Please check your email to reset the password.</p>';
+        }
+       
+    //}
+    
+
+}
+
+//add_action('wp_login_failed', 'show_credential_err_shortcode');
+
 
 
 
 
 ?>
-
-

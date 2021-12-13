@@ -34,7 +34,10 @@ Text Domain:  twentytwentyonechild
 }
 
 
+.diff{
 
+    color:white;
+}
 #primary-menu-list a, .main-nav-welcm{
     background-color: red;
     color:white;
@@ -180,6 +183,39 @@ p.login-msg{
     width:15rem;
     position: relative;
  }
+
+
+ .forgot-password{
+
+    color:white;
+    text-decoration: none;
+    margin-left:20%;
+    width:100%;
+    margin-top:0;
+    
+
+ }
+
+
+ 
+ #forgot{
+    background-color: red;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+
+    border-radius: 0.5rem;
+    
+ }
+
+ #forgot:hover{
+    background-color: white;
+    color:red;
+
+
+ }
+
+
+ 
 
 
 
