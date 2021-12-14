@@ -46,6 +46,22 @@
             add_action('login_form_bottom', 'add_register_button');
 
 
+        //Add Google login button on custom login form
+
+        function add_google_login_button(){
+
+                
+            
+            $google_login_button='<a href="/wp-login.php?gaautologin=true">Login with Google</a>';
+            return $google_login_button;
+
+        }
+
+        add_action('login_form_bottom', 'add_google_login_button');
+
+        
+
+
 /**** Add menu items -end */    
 
 
@@ -68,9 +84,10 @@
             function redirect_login_page(){
                 $login_page=home_url('/login');
                 $page_viewed=basename(esc_url($_SERVER['REQUEST_URI']));
+                $gaautologin=(isset($_GET['gaautologin'])?$_GET['gaautologin']:0);
                 //echo $_SERVER['REQUEST_URI'];
                 //if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) && strpos('action=rp',$_SERVER['REQUEST_URI']) == 0)
-                if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) )
+                if( ($page_viewed == "wp-login.php" || $page_viewed == "wp-login") && $_SERVER['REQUEST_METHOD']=="GET" && !(is_user_logged_in()) && !($gaautologin==true) )
                 
                 
                 {
@@ -106,7 +123,7 @@
             function verify_username_password( $user, $username, $password ) {
                 
                 $login_page  = home_url( '/login/' );
-                if( $username == "" || $password == "")  {
+                if(( $username == "" || $password == "") && $_SERVER['REQUEST_METHOD']=="POST" ){
                     
                     wp_redirect( $login_page . '?login=empty');
                     exit;
@@ -147,6 +164,7 @@
         
         if(is_page('login')){
             wp_enqueue_script('loginscript',get_template_directory_uri().' - child/js/login.js',array(),null);
+           
         }
         if(is_page('register')){
             wp_enqueue_script('registerscript',get_template_directory_uri().' - child/js/register.js',array(),null);

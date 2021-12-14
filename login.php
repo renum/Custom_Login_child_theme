@@ -6,6 +6,7 @@
 
 <?php get_header();?>
 
+
 <?php
 
     while(have_posts()):the_post();
@@ -60,6 +61,8 @@
 
         $forgot_link='<div class="forgot-password"><p>Forgot your password. Click here to reset.</p>'.'<button id="forgot" onclick=location.href="'. wp_lostpassword_url(). '">Reset Password</button></div>';
         echo $forgot_link;
+
+        
         
         $args = array(
             'redirect' => home_url(), 
@@ -80,7 +83,8 @@
         
     
     }
-endwhile;
+    
+
 
 
 
@@ -89,5 +93,11 @@ endwhile;
 
 
 ?>
+
+
+    
+  
+
+  <?php endwhile;?> 
 
 <?php get_footer();?>
